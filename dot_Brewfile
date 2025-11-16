@@ -48,6 +48,7 @@ brew "podman"          # Container engine
 brew "bitwarden-cli"   # Bitwarden password manager CLI
 
 # Casks
+cask "bettertouchtool"        # Customize trackpad and keyboard
 cask "bitwarden"              # Bitwarden password manager GUI
 cask "claude-code"            # AI coding assistant
 cask "firefox"                # Web browser
