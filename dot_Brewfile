@@ -53,6 +53,7 @@ cask "bitwarden"              # Bitwarden password manager GUI
 cask "claude-code"            # AI coding assistant
 cask "firefox"                # Web browser
 cask "font-hack-nerd-font"    # Nerd Font for terminals
+cask "istat-menus"            # System monitoring and stats
 cask "iterm2"                 # Terminal emulator
 cask "moom"                   # Window management
 cask "standard-notes"         # Encrypted notes app
