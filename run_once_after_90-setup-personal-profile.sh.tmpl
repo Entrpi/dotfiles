@@ -1,0 +1,104 @@
+#!/bin/bash
+
+# Setup Personal Profile from Submodule
+# Runs after all other setup is complete
+
+set -e
+
+PERSONAL_DIR="{{ .chezmoi.sourceDir }}/.personal"
+
+echo "Checking for personal profile..."
+
+# Check if .personal submodule exists
+if [ -d "$PERSONAL_DIR/.git" ]; then
+    echo "✓ Personal profile submodule found"
+
+    # Check if age key is already set up
+    if [ -f ~/.config/chezmoi/key.txt ]; then
+        echo "✓ Age encryption key found"
+
+        # Re-init chezmoi to pick up the personal data
+        chezmoi init --force
+
+        echo "✓ Personal profile configuration loaded"
+        echo ""
+        echo "Profile info:"
+        echo "  Name: {{ .name }}"
+        echo "  Email: {{ .email }}"
+        echo "  GitHub: {{ .github }}"
+
+        # Decrypt and restore SSH keys
+        if [ -f "$PERSONAL_DIR/private_dot_ssh/encrypted_private_id_ed25519.age" ]; then
+            echo "Decrypting SSH keys..."
+            mkdir -p ~/.ssh
+            chmod 700 ~/.ssh
+
+            # Decrypt the private key
+            age --decrypt --identity ~/.config/chezmoi/key.txt \
+                -o ~/.ssh/id_ed25519 \
+                "$PERSONAL_DIR/private_dot_ssh/encrypted_private_id_ed25519.age"
+            chmod 600 ~/.ssh/id_ed25519
+
+            # Copy the public key
+            cp "$PERSONAL_DIR/private_dot_ssh/id_ed25519.pub" ~/.ssh/
+            chmod 644 ~/.ssh/id_ed25519.pub
+
+            echo "✓ SSH keys decrypted and restored"
+        fi
+
+        echo ""
+        echo "✓ Personal profile setup complete!"
+    else
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "⚠ Age encryption key required!"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "Personal profile found, but the age key is missing."
+        echo "The age key is needed to decrypt your SSH keys."
+        echo ""
+        echo "To complete setup:"
+        echo "  1. Retrieve your age key from secure storage"
+        echo "  2. Save it to: ~/.config/chezmoi/key.txt"
+        echo "  3. Set permissions: chmod 600 ~/.config/chezmoi/key.txt"
+        echo "  4. Re-run: chezmoi init --force && chezmoi apply"
+        echo ""
+        echo "The age key looks like:"
+        echo "  # created: [timestamp]"
+        echo "  # public key: age1..."
+        echo "  AGE-SECRET-KEY-1..."
+        echo ""
+    fi
+elif [ -d "{{ .chezmoi.sourceDir }}/.git" ]; then
+    # Dotfiles repo exists but no personal submodule
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "No personal profile found (this is optional)"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "The personal profile is a private submodule containing:"
+    echo "  • Your name, email, and GitHub username"
+    echo "  • Your age encryption key"
+    echo "  • Your encrypted SSH keys"
+    echo ""
+    echo "To create a personal profile:"
+    echo "  chezmoi cd"
+    echo "  .scripts/create-personal-profile.sh"
+    echo ""
+    echo "To use an existing personal profile:"
+    echo "  1. Add the submodule:"
+    echo "     chezmoi cd"
+    echo "     git submodule add git@github.com:YOUR-USERNAME/dotfiles-personal.git .personal"
+    echo "     git submodule update --init --recursive"
+    echo ""
+    echo "  2. Manually restore your age key (from password manager/backup):"
+    echo "     mkdir -p ~/.config/chezmoi"
+    echo "     nano ~/.config/chezmoi/key.txt  # Paste your age key"
+    echo "     chmod 600 ~/.config/chezmoi/key.txt"
+    echo ""
+    echo "  3. Apply dotfiles:"
+    echo "     chezmoi init --force"
+    echo "     chezmoi apply"
+    echo ""
+    echo "NOTE: The age key is NEVER stored in git for security."
+    echo ""
+fi

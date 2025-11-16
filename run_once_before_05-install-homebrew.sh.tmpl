@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Install Homebrew and packages from Brewfile
+# This script runs once before applying dotfiles on new systems
+
+set -e
+
+echo "Setting up Homebrew and packages..."
+echo ""
+
+# Check if Homebrew is installed
+if ! command -v brew &> /dev/null; then
+    echo "Homebrew not found. Installing Homebrew..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+    # Add Homebrew to PATH for Apple Silicon Macs
+    if [ -d "/opt/homebrew/bin" ]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+
+    echo "✓ Homebrew installed"
+else
+    echo "✓ Homebrew already installed"
+fi
+
+echo ""
+echo "Installing packages from Brewfile..."
+
+# Check if Brewfile exists
+BREWFILE="{{ .chezmoi.homeDir }}/.Brewfile"
+if [ ! -f "$BREWFILE" ]; then
+    echo "✗ Brewfile not found at $BREWFILE"
+    echo "  Skipping package installation"
+    exit 0
+fi
+
+# Install packages from Brewfile
+if brew bundle check --file="$BREWFILE" &> /dev/null; then
+    echo "✓ All packages already installed"
+else
+    echo "Installing missing packages..."
+    brew bundle install --file="$BREWFILE" --no-lock
+    echo "✓ Packages installed"
+fi
+
+echo ""
+echo "✓ Homebrew setup complete!"

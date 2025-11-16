@@ -1,0 +1,56 @@
+# Homebrew Bundle
+# Auto-generated list of installed packages
+# Install with: brew bundle install
+
+# Taps
+tap "homebrew/bundle"
+tap "homebrew/cask-fonts"
+
+# Essential Tools
+brew "chezmoi"         # Dotfile manager
+brew "curl"            # HTTP client
+brew "neovim"          # Modern vim
+
+# Shell Enhancement
+brew "oh-my-posh"      # Prompt theme engine
+brew "antidote"        # ZSH plugin manager
+brew "atuin"           # Better shell history
+
+# Font Tools
+brew "fontforge"       # Font editor and patcher
+
+# System Monitoring
+brew "htop"            # Interactive process viewer
+brew "btop"            # Modern resource monitor
+brew "nvtop"           # GPU process monitor
+
+# Modern CLI Replacements
+brew "bat"             # Better cat with syntax highlighting
+brew "eza"             # Modern ls replacement
+brew "ripgrep"         # Faster grep
+brew "fd"              # Faster find
+brew "fzf"             # Fuzzy finder
+
+# File Utilities
+brew "tree"            # Directory tree viewer
+brew "jq"              # JSON processor
+brew "yq"              # YAML processor
+brew "tlrc"            # Simplified man pages (tldr client)
+
+# Development Tools
+brew "git"             # Version control
+brew "gh"              # GitHub CLI
+brew "age"             # Modern encryption tool for chezmoi secrets
+brew "python@3.14"     # Python programming language
+brew "podman"          # Container engine
+
+# Security & Secrets Management
+brew "bitwarden-cli"   # Bitwarden password manager CLI
+
+# Casks
+cask "bitwarden"              # Bitwarden password manager GUI
+cask "claude-code"            # AI coding assistant
+cask "firefox"                # Web browser
+cask "font-hack-nerd-font"    # Nerd Font for terminals
+cask "iterm2"                 # Terminal emulator
+cask "visual-studio-code"     # Code editor

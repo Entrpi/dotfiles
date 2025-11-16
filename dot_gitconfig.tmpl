@@ -1,0 +1,47 @@
+# Git configuration
+# This file is templated by chezmoi
+
+[user]
+    name = {{ .name }}
+    email = {{ .email }}
+
+[github]
+    user = {{ .github }}
+
+[init]
+    defaultBranch = main
+
+[core]
+    editor = nvim
+    autocrlf = input
+    excludesfile = ~/.gitignore_global
+
+[pull]
+    rebase = false
+
+[push]
+    default = simple
+    autoSetupRemote = true
+
+[fetch]
+    prune = true
+
+[diff]
+    colorMoved = zebra
+
+[merge]
+    conflictstyle = diff3
+
+[color]
+    ui = auto
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    unstage = reset HEAD --
+    last = log -1 HEAD
+    visual = log --graph --oneline --decorate --all
+    amend = commit --amend --no-edit
+    undo = reset --soft HEAD^

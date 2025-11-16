@@ -1,0 +1,151 @@
+# ============================================================================
+# Shell Aliases
+# ============================================================================
+
+# General aliases
+alias ll='ls -lah'
+alias la='ls -A'
+alias l='ls -CF'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+
+# Git aliases (in addition to those from oh-my-zsh git plugin)
+alias gs='git status'
+alias gp='git push'
+alias gl='git pull'
+alias gd='git diff'
+alias gc='git commit'
+alias gco='git checkout'
+alias ga='git add'
+alias gaa='git add --all'
+alias glog='git log --oneline --decorate --graph'
+alias glogf='git log --oneline --decorate --graph --all'
+
+# Chezmoi aliases
+alias cz='chezmoi'
+alias cza='chezmoi add'
+alias czap='chezmoi apply'
+alias cze='chezmoi edit'
+alias czd='chezmoi diff'
+alias czs='chezmoi status'
+alias czcd='cd $(chezmoi source-path)'
+
+# SSH key management with chezmoi
+alias ssh-encrypt='chezmoi add --encrypt ~/.ssh/id_ed25519 && chezmoi add ~/.ssh/id_ed25519.pub'
+alias ssh-show='cat ~/.ssh/id_ed25519.pub'
+alias ssh-github='gh ssh-key add ~/.ssh/id_ed25519.pub --title "$(hostname)"'
+
+# Safety aliases
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Directory listing enhancements
+alias lsd='ls -d */'
+alias lh='ls -lh'
+
+# Quick navigation
+alias ~='cd ~'
+alias -- -='cd -'
+
+# System utilities
+alias ports='netstat -tulanp'
+alias myip='curl -s https://ipinfo.io/ip'
+alias localip='ipconfig getifaddr en0'
+alias flushdns='sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder'
+
+# Process management
+alias psg='ps aux | grep -v grep | grep -i -e VSZ -e'
+alias top='top -o cpu'
+
+# Modern replacements (with system fallbacks)
+# Use 'bat' for cat with syntax highlighting
+alias cat='bat --paging=never'
+alias ccat='/bin/cat'  # System cat fallback
+
+# Use 'eza' for ls with better formatting
+alias ls='eza'
+alias ll='eza -lah'
+alias la='eza -A'
+alias l='eza -F'
+alias sls='/bin/ls'    # System ls fallback for large directories
+
+# Better search tools
+alias grep='rg'
+alias sgrep='/usr/bin/grep'  # System grep fallback
+
+# Modern alternatives
+alias find='fd'
+alias sfind='/usr/bin/find'  # System find fallback
+alias top='btop'
+alias stop='/usr/bin/top'    # System top fallback
+
+# Alias management
+alias-edit() {
+  nvim ~/.aliases && source ~/.aliases
+}
+
+alias-reload() {
+  source ~/.aliases
+  echo "Aliases reloaded!"
+}
+
+alias-list() {
+  grep "^alias " ~/.aliases | sed 's/alias //' | sort
+}
+
+alias-search() {
+  if [ -z "$1" ]; then
+    echo "Usage: alias-search <keyword>"
+    return 1
+  fi
+  grep -i "$1" ~/.aliases
+}
+
+# Bitwarden shortcuts
+alias bw-unlock='export BW_SESSION=$(bw unlock --raw)'
+alias bw-lock='bw lock && unset BW_SESSION'
+alias bw-status='bw status | jq'
+alias bw-sync='bw sync'
+alias bw-get='bw get'
+
+# ============================================================================
+# Functions
+# ============================================================================
+
+# Create directory and cd into it
+mkcd() {
+  mkdir -p "$1" && cd "$1"
+}
+
+# Extract various archive formats
+extract() {
+  if [ -f "$1" ]; then
+    case "$1" in
+      *.tar.bz2)   tar xjf "$1"    ;;
+      *.tar.gz)    tar xzf "$1"    ;;
+      *.bz2)       bunzip2 "$1"    ;;
+      *.rar)       unrar x "$1"    ;;
+      *.gz)        gunzip "$1"     ;;
+      *.tar)       tar xf "$1"     ;;
+      *.tbz2)      tar xjf "$1"    ;;
+      *.tgz)       tar xzf "$1"    ;;
+      *.zip)       unzip "$1"      ;;
+      *.Z)         uncompress "$1" ;;
+      *.7z)        7z x "$1"       ;;
+      *)           echo "'$1' cannot be extracted via extract()" ;;
+    esac
+  else
+    echo "'$1' is not a valid file"
+  fi
+}
+
+# Quick note taking
+note() {
+  echo "$(date '+%Y-%m-%d %H:%M:%S') - $*" >> ~/.notes.txt
+}
+
+notes() {
+  ${EDITOR:-nvim} ~/.notes.txt
+}

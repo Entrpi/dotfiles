@@ -1,0 +1,133 @@
+# ============================================================================
+# ZSH Configuration
+# ============================================================================
+
+# ============================================================================
+# Environment Variables
+# ============================================================================
+
+# History configuration
+HISTFILE=~/.zsh_history
+HISTSIZE=100000
+SAVEHIST=100000
+
+# Set language environment
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# Set editor
+export EDITOR='nvim'
+export VISUAL='nvim'
+
+# Homebrew
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+
+# ============================================================================
+# ZSH Options
+# ============================================================================
+
+# History options
+setopt EXTENDED_HISTORY          # Write the history file in the ':start:elapsed;command' format
+setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits
+setopt SHARE_HISTORY             # Share history between all sessions
+setopt HIST_EXPIRE_DUPS_FIRST    # Expire a duplicate event first when trimming history
+setopt HIST_IGNORE_DUPS          # Do not record an event that was just recorded again
+setopt HIST_IGNORE_ALL_DUPS      # Delete an old recorded event if a new event is a duplicate
+setopt HIST_FIND_NO_DUPS         # Do not display a previously found event
+setopt HIST_IGNORE_SPACE         # Do not record an event starting with a space
+setopt HIST_SAVE_NO_DUPS         # Do not write a duplicate event to the history file
+setopt HIST_VERIFY               # Do not execute immediately upon history expansion
+
+# Directory options
+setopt AUTO_CD                   # Change directory just by typing its name
+setopt AUTO_PUSHD                # Make cd push the old directory onto the directory stack
+setopt PUSHD_IGNORE_DUPS         # Don't push multiple copies of the same directory onto the directory stack
+setopt PUSHD_MINUS               # Exchanges the meanings of '+' and '-' when used with a number to specify a directory in the stack
+
+# Completion options
+setopt AUTO_MENU                 # Show completion menu on a successive tab press
+setopt ALWAYS_TO_END             # Move cursor to the end of a completed word
+setopt COMPLETE_IN_WORD          # Complete from both ends of a word
+setopt MENU_COMPLETE             # Automatically highlight first element of completion menu
+setopt LIST_PACKED               # Make the completion list smaller
+
+# Other options
+setopt INTERACTIVE_COMMENTS      # Allow comments in interactive mode
+setopt EXTENDED_GLOB             # Use extended globbing syntax
+
+# ============================================================================
+# Completion System
+# ============================================================================
+
+# Initialize completion system BEFORE loading plugins
+autoload -Uz compinit
+# Run compinit once a day for better performance
+if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
+
+# Completion styling
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' special-dirs true
+zstyle ':completion:*' squeeze-slashes true
+
+# ============================================================================
+# Antidote - ZSH Plugin Manager
+# ============================================================================
+
+# Source antidote
+source /opt/homebrew/opt/antidote/share/antidote/antidote.zsh
+
+# Initialize plugins statically with ${ZDOTDIR:-~}/.zsh_plugins.txt
+antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.txt
+
+# ============================================================================
+# Key Bindings
+# ============================================================================
+
+# Use emacs key bindings
+bindkey -e
+
+# History substring search key bindings
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
+bindkey '^P' history-substring-search-up
+bindkey '^N' history-substring-search-down
+
+# Other useful bindings
+bindkey '^[[Z' reverse-menu-complete  # Shift-Tab to go backwards in completion menu
+bindkey '^[[3~' delete-char           # Delete key
+bindkey '^[[H' beginning-of-line      # Home key
+bindkey '^[[F' end-of-line            # End key
+
+# ============================================================================
+# Atuin - Better Shell History
+# ============================================================================
+
+# Initialize atuin
+eval "$(atuin init zsh --disable-up-arrow)"
+
+# ============================================================================
+# Oh-My-Posh - Prompt Theme
+# ============================================================================
+
+# Initialize oh-my-posh with devious-diamonds theme
+eval "$(oh-my-posh init zsh --config /opt/homebrew/opt/oh-my-posh/themes/devious-diamonds.omp.yaml)"
+
+# ============================================================================
+# Load Aliases and Functions
+# ============================================================================
+
+# Source aliases and functions file
+[ -f ~/.aliases ] && source ~/.aliases
+
+# ============================================================================
+# Local Customizations
+# ============================================================================
+
+# Source local customizations if they exist
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local

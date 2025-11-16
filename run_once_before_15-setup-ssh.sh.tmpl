@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# SSH Setup Script
+# Restores encrypted SSH keys from repo or generates new ones
+
+set -e
+
+echo "Setting up SSH keys..."
+echo ""
+
+# Ensure .ssh directory exists with correct permissions
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+
+# Check if SSH key already exists (either in filesystem or encrypted in repo)
+if [ -f ~/.ssh/id_ed25519 ]; then
+    echo "✓ SSH key already exists at ~/.ssh/id_ed25519"
+elif [ -f "{{ .chezmoi.sourceDir }}/private_dot_ssh/private_id_ed25519.age" ]; then
+    echo "Found encrypted SSH key in repository, it will be restored by chezmoi"
+    echo "✓ Encrypted SSH keys will be applied"
+else
+    echo "No SSH key found. Generating new ed25519 key..."
+    ssh-keygen -t ed25519 -C "{{ .email }}" -f ~/.ssh/id_ed25519 -N ""
+    echo "✓ SSH key generated"
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Your public key:"
+    echo ""
+    cat ~/.ssh/id_ed25519.pub
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "To add this key to GitHub:"
+    echo "  1. Copy the public key above"
+    echo "  2. Go to https://github.com/settings/keys"
+    echo "  3. Click 'New SSH key'"
+    echo "  4. Paste the key and save"
+    echo ""
+    echo "Or use the GitHub CLI:"
+    echo "  gh ssh-key add ~/.ssh/id_ed25519.pub --title \"$(hostname)\""
+    echo ""
+    echo "To encrypt and commit this key to your dotfiles:"
+    echo "  chezmoi add --encrypt ~/.ssh/id_ed25519"
+    echo "  chezmoi add ~/.ssh/id_ed25519.pub"
+    echo "  chezmoi cd && git add . && git commit -m 'Add SSH keys' && git push"
+fi
+
+# Set correct permissions
+chmod 600 ~/.ssh/id_ed25519 2>/dev/null || true
+chmod 644 ~/.ssh/id_ed25519.pub 2>/dev/null || true
+chmod 600 ~/.ssh/config 2>/dev/null || true
+
+echo ""
+echo "✓ SSH setup complete!"

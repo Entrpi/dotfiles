@@ -1,0 +1,31 @@
+{{- $personalData := "" -}}
+{{- $personalFile := joinPath .chezmoi.sourceDir ".personal/data.yaml" -}}
+
+{{- if stat $personalFile -}}
+{{-   $personalData = include $personalFile | fromYaml -}}
+{{- end -}}
+
+{{- $name := "" -}}
+{{- $email := "" -}}
+{{- $github := "" -}}
+
+{{- if $personalData -}}
+{{-   $name = $personalData.name -}}
+{{-   $email = $personalData.email -}}
+{{-   $github = $personalData.github -}}
+{{- else -}}
+{{-   $name = promptStringOnce . "name" "Full name" -}}
+{{-   $email = promptStringOnce . "email" "Email address" -}}
+{{-   $github = promptStringOnce . "github" "GitHub username" -}}
+{{- end -}}
+
+encryption = "age"
+
+[data]
+    name = {{ $name | quote }}
+    email = {{ $email | quote }}
+    github = {{ $github | quote }}
+
+[age]
+    identity = "~/.config/chezmoi/key.txt"
+    recipient = ""

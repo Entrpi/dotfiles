@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Install patched Monaco Nerd Font
+# This script runs once before applying dotfiles on new systems
+
+set -e
+
+echo "Installing Monaco Nerd Font..."
+
+# Create fonts directory if it doesn't exist
+mkdir -p ~/Library/Fonts
+
+# Copy patched Monaco font
+FONT_FILE="{{ .chezmoi.sourceDir }}/.fonts/MonacoNerdFontMono-Regular.ttf"
+if [ -f "$FONT_FILE" ]; then
+    cp "$FONT_FILE" ~/Library/Fonts/
+    echo "✓ Monaco Nerd Font installed to ~/Library/Fonts/"
+else
+    echo "✗ Font file not found: $FONT_FILE"
+    exit 1
+fi
+
+# Configure iTerm2 to use the patched font
+ITERM_PLIST=~/Library/Preferences/com.googlecode.iterm2.plist
+
+if [ -f "$ITERM_PLIST" ]; then
+    echo "Configuring iTerm2 to use Monaco Nerd Font..."
+    /usr/libexec/PlistBuddy -c "Set :\"New Bookmarks\":0:\"Normal Font\" \"MonacoNerdFontMono-Regular 12\"" "$ITERM_PLIST" 2>/dev/null || \
+    /usr/libexec/PlistBuddy -c "Add :\"New Bookmarks\":0:\"Normal Font\" string \"MonacoNerdFontMono-Regular 12\"" "$ITERM_PLIST" 2>/dev/null || true
+    echo "✓ iTerm2 configured to use Monaco Nerd Font"
+    echo "  Note: You may need to restart iTerm2 for changes to take effect"
+else
+    echo "⚠ iTerm2 preferences not found - font will be installed but iTerm2 not configured"
+    echo "  You can configure the font manually in iTerm2: Preferences > Profiles > Text > Font"
+fi
+
+echo "✓ Monaco Nerd Font setup complete!"
