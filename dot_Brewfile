@@ -55,6 +55,7 @@ cask "firefox"                # Web browser
 cask "font-hack-nerd-font"    # Nerd Font for terminals
 cask "istat-menus"            # System monitoring and stats
 cask "iterm2"                 # Terminal emulator
+cask "localsend"              # Local file sharing
 cask "moom"                   # Window management
 cask "standard-notes"         # Encrypted notes app
 cask "syncthing-app"          # File synchronization
