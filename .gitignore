@@ -1,0 +1,5 @@
+# Personal profile directory (cloned separately)
+.personal/
+
+# Chezmoi state
+.chezmoistate.boltdb

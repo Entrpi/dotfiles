@@ -1,0 +1,43 @@
+#!/bin/bash
+# Authenticate with GitHub CLI
+
+set -e
+
+echo "Checking GitHub authentication..."
+
+# Check if gh is installed
+if ! command -v gh &> /dev/null; then
+    echo "⚠️  GitHub CLI (gh) is not installed"
+    echo "   Skipping GitHub authentication"
+    exit 0
+fi
+
+# Check if already authenticated
+if gh auth status &> /dev/null; then
+    echo "✓ Already authenticated with GitHub"
+    exit 0
+fi
+
+# Prompt user to authenticate
+echo ""
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "  GitHub Authentication Required"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "To access your private personal profile repository, you need to"
+echo "authenticate with GitHub."
+echo ""
+echo "This will open a browser window for authentication."
+echo ""
+read -p "Press Enter to continue with 'gh auth login'..."
+
+# Run gh auth login
+if gh auth login; then
+    echo ""
+    echo "✓ Successfully authenticated with GitHub"
+else
+    echo ""
+    echo "⚠️  GitHub authentication failed or was cancelled"
+    echo "   You can run 'gh auth login' manually later"
+    echo "   Then run 'chezmoi apply' to continue setup"
+fi

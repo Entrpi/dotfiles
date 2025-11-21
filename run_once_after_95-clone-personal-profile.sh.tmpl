@@ -1,0 +1,63 @@
+#!/bin/bash
+# Clone personal profile repository if it doesn't exist
+
+set -e
+
+PERSONAL_DIR="{{ .chezmoi.sourceDir }}/.personal"
+PERSONAL_REPO="{{ .github }}/dotfiles-personal"
+
+echo "Checking for personal profile..."
+
+# Check if .personal already exists
+if [ -d "$PERSONAL_DIR" ]; then
+    echo "✓ Personal profile already exists"
+    exit 0
+fi
+
+# Check if gh is installed
+if ! command -v gh &> /dev/null; then
+    echo "⚠️  GitHub CLI (gh) is not installed"
+    echo "   Personal profile will be skipped"
+    echo "   Install gh and run 'chezmoi apply' again to clone personal profile"
+    exit 0
+fi
+
+# Check gh auth status
+if ! gh auth status &> /dev/null; then
+    echo "⚠️  Not authenticated with GitHub"
+    echo "   Run 'gh auth login' then 'chezmoi apply' again to clone personal profile"
+    exit 0
+fi
+
+# Clone the personal profile repository
+echo "Cloning personal profile repository..."
+if gh repo clone "$PERSONAL_REPO" "$PERSONAL_DIR" 2>&1; then
+    echo "✓ Personal profile cloned successfully"
+
+    # Check if age key exists for decryption
+    if [ -f "$HOME/.config/chezmoi/key.txt" ]; then
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "  Age encryption key found!"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "Your SSH keys will be decrypted from the personal profile."
+        echo "Run 'chezmoi apply' again to decrypt and apply."
+    else
+        echo ""
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo "  Age encryption key not found"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
+        echo "To decrypt your SSH keys from the personal profile, you need to"
+        echo "restore your age encryption key to:"
+        echo "  ~/.config/chezmoi/key.txt"
+        echo ""
+        echo "After restoring the key, run 'chezmoi apply' to decrypt SSH keys."
+    fi
+else
+    echo "⚠️  Failed to clone personal profile"
+    echo "   The repository may not exist or you may not have access"
+    echo "   You can manually clone it later with:"
+    echo "   gh repo clone $PERSONAL_REPO $PERSONAL_DIR"
+fi

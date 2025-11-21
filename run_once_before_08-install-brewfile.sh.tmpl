@@ -1,0 +1,30 @@
+#!/bin/bash
+# Install packages from Brewfile
+
+set -e
+
+echo "Installing packages from Brewfile..."
+
+# Check if Homebrew is installed
+if ! command -v brew &> /dev/null; then
+    echo "⚠️  Homebrew is not installed"
+    echo "   Skipping Brewfile installation"
+    exit 0
+fi
+
+# Check if Brewfile exists
+BREWFILE="$HOME/.Brewfile"
+if [ ! -f "$BREWFILE" ]; then
+    echo "⚠️  Brewfile not found at $BREWFILE"
+    echo "   Skipping package installation"
+    exit 0
+fi
+
+# Install packages from Brewfile
+echo "Running: brew bundle install --file=$BREWFILE"
+if brew bundle install --file="$BREWFILE"; then
+    echo "✓ Brewfile packages installed successfully"
+else
+    echo "⚠️  Some packages failed to install"
+    echo "   You can run 'brew bundle install --file=$BREWFILE' manually to retry"
+fi

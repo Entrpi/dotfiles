@@ -32,13 +32,17 @@ These values are stored locally in `~/.config/chezmoi/chezmoi.toml` and used to 
 
 **What happens automatically:**
 1. Install Homebrew (if needed)
-2. Install all packages from Brewfile
-3. Install and configure Monaco Nerd Font
-4. Apply all dotfiles and configurations
-5. If `.personal/` submodule exists with age key, decrypt SSH keys automatically
+2. Install all packages from Brewfile (including GitHub CLI)
+3. Prompt for GitHub authentication (`gh auth login`)
+4. Install and configure Monaco Nerd Font
+5. Generate SSH keys (if needed)
+6. Apply all dotfiles and configurations
+7. Clone `.personal/` repository (if authenticated and repository exists)
+8. Decrypt SSH keys automatically (if age key is present)
 
 **After first setup:**
-- Run `.scripts/create-personal-profile.sh` to create your personal profile (optional but recommended)
+- If you don't have a personal profile yet, run `.scripts/create-personal-profile.sh` to create one
+- If you have an existing personal profile, restore your age key to `~/.config/chezmoi/key.txt` and run `chezmoi apply` to decrypt SSH keys
 - Or use the dotfiles as-is with local configuration only
 
 ### Manual Setup
@@ -177,9 +181,8 @@ Atuin provides enhanced shell history with:
 ├── README.md                                         # This file
 ├── .chezmoi.toml.tmpl                                # Chezmoi config (checks for .personal/data.yaml)
 ├── .gitignore                                        # Git ignore (.personal/ is ignored in main repo)
-├── .gitmodules                                       # Git submodules (.personal linked here)
 │
-├── .personal/                                        # Personal profile submodule (PRIVATE REPO)
+├── .personal/                                        # Personal profile (PRIVATE REPO, cloned separately)
 │   ├── data.yaml                                     # Your name, email, GitHub username
 │   ├── private_dot_ssh/
 │   │   ├── encrypted_private_id_ed25519.age         # Encrypted SSH private key
@@ -208,13 +211,16 @@ Atuin provides enhanced shell history with:
 │       └── config.toml                               # Atuin config (local-only history)
 │
 ├── private_dot_ssh/
-│   ├── README.md                                     # SSH key documentation
+│   ├── README.md                                     # SSH configuration documentation
 │   └── private_config.tmpl                           # SSH client config
 │
 ├── run_once_before_05-install-homebrew.sh.tmpl      # Homebrew installation
+├── run_once_before_08-install-brewfile.sh.tmpl      # Install Brewfile packages
+├── run_once_before_09-github-auth.sh.tmpl           # GitHub CLI authentication
 ├── run_once_before_10-install-nerd-fonts.sh.tmpl    # Font installation
 ├── run_once_before_15-setup-ssh.sh.tmpl             # SSH key generation (if needed)
-└── run_once_after_90-setup-personal-profile.sh.tmpl # Load personal profile, decrypt SSH keys
+├── run_once_after_90-setup-personal-profile.sh.tmpl # Load personal profile, decrypt SSH keys
+└── run_once_after_95-clone-personal-profile.sh.tmpl # Clone personal profile repository
 ```
 
 ## Updating
@@ -334,31 +340,29 @@ gh ssh-key add ~/.ssh/id_ed25519.pub --title "$(hostname)"
 
 ### Using on New Machines
 
-**Option 1: With Existing Personal Profile**
-
 ```bash
 # Install and apply dotfiles
 sh -c "$(curl -fsLS get.chezmoi.io)" -- init --apply <your-github-username>/dotfiles
-
-# At this point, SSH keys are NOT yet decrypted
-# Manually restore your age encryption key
-mkdir -p ~/.config/chezmoi
-nano ~/.config/chezmoi/key.txt  # Paste your backed-up age key
-chmod 600 ~/.config/chezmoi/key.txt
-
-# Re-apply to decrypt SSH keys
-chezmoi init --force
-chezmoi apply
 ```
 
-**Option 2: Without Personal Profile (Generic Setup)**
+**During setup, you'll be prompted for:**
+1. Your name, email, and GitHub username (stored in `~/.config/chezmoi/chezmoi.toml`)
+2. GitHub authentication via `gh auth login` (opens browser)
 
-If you don't have a personal profile submodule, the dotfiles will prompt you for:
-- Full name
-- Email address
-- GitHub username
+**After setup completes:**
 
-These values are stored locally in `~/.config/chezmoi/chezmoi.toml` and used to template configuration files. You can create a personal profile later with the setup script.
+**If you have an existing personal profile:**
+- Restore your age encryption key from your password manager:
+  ```bash
+  mkdir -p ~/.config/chezmoi
+  nano ~/.config/chezmoi/key.txt  # Paste your backed-up age key
+  chmod 600 ~/.config/chezmoi/key.txt
+  ```
+- Run `chezmoi apply` again to decrypt SSH keys from the personal profile
+
+**If you don't have a personal profile yet:**
+- Everything works with local configuration
+- Optionally run `.scripts/create-personal-profile.sh` to create your encrypted personal profile
 
 ### Updating Personal Information
 
