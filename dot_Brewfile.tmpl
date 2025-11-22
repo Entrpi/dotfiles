@@ -1,6 +1,9 @@
 # Homebrew Bundle
-# Auto-generated list of installed packages
 # Install with: brew bundle install
+
+# ============================================================================
+# Core Packages (Always Installed)
+# ============================================================================
 
 # Essential Tools
 brew "chezmoi"         # Dotfile manager
@@ -33,26 +36,59 @@ brew "jq"              # JSON processor
 brew "yq"              # YAML processor
 brew "tlrc"            # Simplified man pages (tldr client)
 
-# Development Tools
+# Development Tools (Core)
 brew "git"             # Version control
 brew "gh"              # GitHub CLI
 brew "age"             # Modern encryption tool for chezmoi secrets
 brew "python@3.14"     # Python programming language
-brew "podman"          # Container engine
 
 # Security & Secrets Management
 brew "bitwarden-cli"   # Bitwarden password manager CLI
 
-# Casks
+# ============================================================================
+# Core Casks (Always Installed)
+# ============================================================================
+
+cask "font-hack-nerd-font"    # Nerd Font for terminals
+cask "iterm2"                 # Terminal emulator
+
+# ============================================================================
+# Optional: AI Tools
+# ============================================================================
+{{- if .installAI }}
+
+brew "codex"                  # OpenAI Codex CLI
+brew "gemini-cli"             # Google Gemini CLI
+cask "claude-code"            # Anthropic Claude coding assistant
+{{- end }}
+
+# ============================================================================
+# Optional: Development Tools
+# ============================================================================
+{{- if .installDev }}
+
+brew "podman"                 # Container engine
+cask "visual-studio-code"     # Code editor
+{{- end }}
+
+# ============================================================================
+# Optional: Productivity Apps
+# ============================================================================
+{{- if .installProductivity }}
+
 cask "bettertouchtool"        # Customize trackpad and keyboard
 cask "bitwarden"              # Bitwarden password manager GUI
-cask "claude-code"            # AI coding assistant
-cask "firefox"                # Web browser
-cask "font-hack-nerd-font"    # Nerd Font for terminals
 cask "istat-menus"            # System monitoring and stats
-cask "iterm2"                 # Terminal emulator
 cask "localsend"              # Local file sharing
 cask "moom"                   # Window management
 cask "standard-notes"         # Encrypted notes app
 cask "syncthing-app"          # File synchronization
-cask "visual-studio-code"     # Code editor
+{{- end }}
+
+# ============================================================================
+# Optional: Browsers
+# ============================================================================
+{{- if .installBrowsers }}
+
+cask "firefox"                # Web browser
+{{- end }}

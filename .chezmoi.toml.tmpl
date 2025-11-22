@@ -19,12 +19,22 @@
 {{-   $github = promptStringOnce . "github" "GitHub username" -}}
 {{- end -}}
 
+{{- /* Optional package installation preferences */ -}}
+{{- $installAI := promptBoolOnce . "installAI" "Install AI tools (Claude Code, Gemini CLI, Codex CLI)" -}}
+{{- $installDev := promptBoolOnce . "installDev" "Install development tools (Podman, VS Code)" -}}
+{{- $installProductivity := promptBoolOnce . "installProductivity" "Install productivity apps (BetterTouchTool, iStat Menus, Bitwarden)" -}}
+{{- $installBrowsers := promptBoolOnce . "installBrowsers" "Install additional browsers (Firefox)" -}}
+
 encryption = "age"
 
 [data]
     name = {{ $name | quote }}
     email = {{ $email | quote }}
     github = {{ $github | quote }}
+    installAI = {{ $installAI }}
+    installDev = {{ $installDev }}
+    installProductivity = {{ $installProductivity }}
+    installBrowsers = {{ $installBrowsers }}
 
 [age]
     identity = "~/.config/chezmoi/key.txt"
