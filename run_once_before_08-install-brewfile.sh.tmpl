@@ -5,6 +5,11 @@ set -e
 
 echo "Installing packages from Brewfile..."
 
+# Add Homebrew to PATH if it exists (for fresh installs)
+if [ -d "/opt/homebrew/bin" ] && [ -f "/opt/homebrew/bin/brew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 # Check if Homebrew is installed
 if ! command -v brew &> /dev/null; then
     echo "⚠️  Homebrew is not installed"
