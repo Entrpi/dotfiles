@@ -8,6 +8,11 @@ PERSONAL_REPO="{{ .github }}/dotfiles-personal"
 
 echo "Checking for personal profile..."
 
+# Add Homebrew to PATH if it exists (for fresh installs)
+if [ -d "/opt/homebrew/bin" ] && [ -f "/opt/homebrew/bin/brew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
 # Check if .personal already exists
 if [ -d "$PERSONAL_DIR" ]; then
     echo "✓ Personal profile already exists"
