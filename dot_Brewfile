@@ -2,10 +2,6 @@
 # Auto-generated list of installed packages
 # Install with: brew bundle install
 
-# Taps
-tap "homebrew/bundle"
-tap "homebrew/cask-fonts"
-
 # Essential Tools
 brew "chezmoi"         # Dotfile manager
 brew "curl"            # HTTP client
